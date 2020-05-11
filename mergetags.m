@@ -10,11 +10,13 @@ info_all = struct;
 
 for f=1:nfiles
     file = fullfile(pathname, filename{f});
-    new_data = load(file,'result_tags','result_tagcolumns','result_tagtitle','info');
+    new_data = load(file,'result_tags','result_tagcolumns','result_tagtitle','result_name','info');
     new_tags = new_data.result_tags;
     new_tagcolumns = new_data.result_tagcolumns;
     new_tagtitles = new_data.result_tagtitle;
     
+    new_data.info.resultname = new_data.result_name;
+    new_data.info.resultfile = file;
     % Remove timestamps to save space unless requested
     if ~timetags
         try
