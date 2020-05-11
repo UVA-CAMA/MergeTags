@@ -1,4 +1,5 @@
-function mergetags(pathname,filename)
+function mergetags(pathname,filename,timetags)
+if ~exist('timetags','var'),timetags=false;end
 
 nfiles = size(filename,2);
 
@@ -13,6 +14,17 @@ for f=1:nfiles
     new_tags = new_data.result_tags;
     new_tagcolumns = new_data.result_tagcolumns;
     new_tagtitles = new_data.result_tagtitle;
+    
+    % Remove timestamps to save space unless requested
+    if ~timetags
+        try
+            new_data.info.times=[];
+        end
+        try
+            new_data.info.originaltimes=[];
+        end
+    end
+    
     new_info = new_data.info;
     
     % Add file number to tags
