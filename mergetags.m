@@ -28,24 +28,43 @@ for f=1:nfiles
         result_tagtitle_all = new_tagtitles;
     else
         rows = size(result_tagtitle_all,1);
-        for row=1:rows
-            alltitles{row,1} = horzcat(result_tagtitle_all{row,1},num2str(result_tagtitle_all{row,2}));
-        end
-        for row=1:size(new_tagtitles,1)
-            newtitles{row,1} = horzcat(new_tagtitles{row,1},num2str(new_tagtitles{row,2}));
-        end
-        [A,B] = ismember(newtitles,alltitles);
-        for a=1:length(A)
-            if A(a)==0
-                result_tagtitle_all(size(result_tagtitle_all,1)+1,:) = new_tagtitles(a,:);
-                result_tagcolumns_all(size(result_tagcolumns_all,2)+1).tagname = new_tagcolumns(a).tagname;
-                result_tags_all(size(result_tags_all,2)+1).tagtable = new_tags(a).tagtable;
-            else
-                result_tags_all(B(a)).tagtable = vertcat(result_tags_all(B(a)).tagtable,new_tags(a).tagtable);
+        if rows==0
+        	result_tags_all = new_tags;
+            result_tagcolumns_all = new_tagcolumns;
+            result_tagtitle_all = new_tagtitles;
+        else
+            for row=1:rows
+                alltitles{row,1} = horzcat(result_tagtitle_all{row,1},num2str(result_tagtitle_all{row,2}));
             end
-        end   
-        alltitles = {};
-        newtitles = {};
+            if size(new_tagtitles,1)>0 && size(new_tagtitles,2)<2 % Handle the situation where there is a struct inside a struct
+                new_tagtitles = new_tagtitles{1};
+            end
+            for row=1:size(new_tagtitles,1)
+                newtitles{row,1} = horzcat(new_tagtitles{row,1},num2str(new_tagtitles{row,2}));
+            end
+            [A,B] = ismember(newtitles,alltitles);
+            for a=1:length(A)
+                if A(a)==0
+                    result_tagtitle_all(size(result_tagtitle_all,1)+1,:) = new_tagtitles(a,:);
+                    result_tagcolumns_all(size(result_tagcolumns_all,2)+1).tagname = new_tagcolumns(a).tagname;
+                    result_tags_all(size(result_tags_all,2)+1).tagtable = new_tags(a).tagtable;
+                else
+                    [oldheight,oldwidth] = size(result_tags_all(B(a)).tagtable);
+                    [newheight,newwidth] = size(new_tags(a).tagtable);
+                    if oldheight==0
+                        result_tags_all(B(a)).tagtable = new_tags(a).tagtable;
+                    elseif newheight==0
+                        result_tags_all(B(a)).tagtable = result_tags_all(B(a)).tagtable;
+                    elseif oldwidth == newwidth
+                        result_tags_all(B(a)).tagtable = vertcat(result_tags_all(B(a)).tagtable,new_tags(a).tagtable);
+                    else
+                        disp(['Old result tag column length was ' num2str(oldwidth) ' and now it is ' num2str(newwidth) ' for ' new_tagtitles{a}]);
+                    end
+                end
+            end   
+            alltitles = {};
+            newtitles = {};
+        end
     end
     info_all(f).info = new_info;
     message = ['Merged file ' num2str(f) ' of ' num2str(nfiles) ' in ' pathname];
