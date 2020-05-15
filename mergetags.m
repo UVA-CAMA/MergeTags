@@ -25,6 +25,9 @@ for f=1:nfiles
         try
             new_data.info.originaltimes=[];
         end
+        try
+            new_data.info.local=[];
+        end     
     end
     
     new_info = new_data.info;
