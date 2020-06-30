@@ -98,7 +98,19 @@ function foldermerge_Callback(hObject, eventdata, handles)
 ndirs = size(pathname,2);
 for d=1:ndirs % If the user selects more than one directory, loop through each directory the user chose
     [P,F] = subdir(pathname{d}); % Look for subdirectories under the user-chosen directory
-    for p=1:length(P)
+    if isempty(P) % If there are no subdirectories
+        files = dir([pathname{d} '/*results.mat']);
+        handles.filename = {};
+        handles.pathname = {};
+        for f=1:length(files)
+            handles.filename{f} = files(f).name;
+            handles.pathname{f} = files(f).folder;
+        end
+        if ~isempty(handles.filename)
+            mergetags(handles.pathname{1},handles.filename)
+        end
+    end
+    for p=1:length(P) % If there are subdirectories
         Findex = find(contains(F{p},'results.mat'));
         files = F{p};
         handles.filename = {};
