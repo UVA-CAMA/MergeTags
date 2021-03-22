@@ -22,7 +22,7 @@ function varargout = mergetagsgui(varargin)
 
 % Edit the above text to modify the response to help mergetagsgui
 
-% Last Modified by GUIDE v2.5 09-May-2019 10:45:59
+% Last Modified by GUIDE v2.5 11-Mar-2021 12:58:31
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -84,8 +84,12 @@ if ~iscell(filename)
     f{1} = filename;
     filename = f;
 end
+% Check if checkboxes are checked
+kqrs = get(handles.keepqrsresults,'Value');
+kc = get(handles.keepcontinuousresults,'Value');
+% Merge Tags
 if ~isempty(pathname)
-    mergetags(pathname,filename)
+    mergetags(pathname,filename,0,kqrs,kc)
 end
 
 % --- Executes on button press in foldermerge.
@@ -93,7 +97,10 @@ function foldermerge_Callback(hObject, eventdata, handles)
 % hObject    handle to foldermerge (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
+% Check if checkboxes are checked
+kqrs = get(handles.keepqrsresults,'Value');
+kc = get(handles.keepcontinuousresults,'Value');
+% Select Directories
 [pathname] = uigetfile_n_dir(pwd, 'Select one or more directories');
 ndirs = size(pathname,2);
 for d=1:ndirs % If the user selects more than one directory, loop through each directory the user chose
@@ -107,7 +114,7 @@ for d=1:ndirs % If the user selects more than one directory, loop through each d
             handles.pathname{f} = files(f).folder;
         end
         if ~isempty(handles.filename)
-            mergetags(handles.pathname{1},handles.filename)
+            mergetags(handles.pathname{1},handles.filename,0,kqrs,kc)
         end
     end
     for p=1:length(P) % If there are subdirectories
@@ -120,7 +127,25 @@ for d=1:ndirs % If the user selects more than one directory, loop through each d
             handles.pathname{f} = P{p};
         end
         if ~isempty(handles.filename)
-            mergetags(handles.pathname{1},handles.filename)
+            mergetags(handles.pathname{1},handles.filename,0,kqrs,kc)
         end
     end
 end
+
+
+% --- Executes on button press in keepqrsresults.
+function keepqrsresults_Callback(hObject, eventdata, handles)
+% hObject    handle to keepqrsresults (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of keepqrsresults
+handles.keepqrsresults = get(hObject,'Value');
+
+% --- Executes on button press in keepcontinuousresults.
+function keepcontinuousresults_Callback(hObject, eventdata, handles)
+% hObject    handle to keepcontinuousresults (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of keepcontinuousresults

@@ -1,4 +1,7 @@
-function mergetags(pathname,filename,timetags)
+ function mergetags(pathname,filename,timetags,kqrs,kc)
+ % timetags = set to 1 if you want to keep timestamps in the info structure, otherwise they will be removed to save space
+ % kqrs = the user's selection as to whether or not they want to keep the qrs results
+ % kc = the user's selection as to whether or not they want to keep the continuous results
 if ~exist('timetags','var'),timetags=false;end
 
 nfiles = size(filename,2);
@@ -11,6 +14,13 @@ info_all = struct;
 for f=1:nfiles
     file = fullfile(pathname, filename{f});
     new_data = load(file,'result_tags','result_tagcolumns','result_tagtitle','result_name','info');
+    if kqrs
+        new_result_qrs = load(file,'result_qrs');
+    end
+    if kc
+        new_result_data = load(file,'result_data');
+        new_result_name = load(file,'result_name');
+    end
     new_tags = new_data.result_tags;
     new_tagcolumns = new_data.result_tagcolumns;
     new_tagtitles = new_data.result_tagtitle;
@@ -38,7 +48,15 @@ for f=1:nfiles
         new_tagcolumns(a).tagname{ncols+1,1} = 'FileNumber';
         new_tags(a).tagtable(:,ncols+1) = repmat(f,size(new_tags(a).tagtable,1),1);
     end
+    
+    % Add file number to continuous data
+    if kc
+        for a=1:length(new_result_data)
+            new_result_data(a).FileNumber = f;
+        end
+    end
         
+    % Merge tags
     if f==1
         result_tags_all = new_tags;
         result_tagcolumns_all = new_tagcolumns;
@@ -83,6 +101,20 @@ for f=1:nfiles
             newtitles = {};
         end
     end
+    
+    % Merge qrs
+    if kqrs
+        if f==1
+            result_qrs_all.result_qrs = new_result_qrs;
+            result_qrs_all.FileNumber = f;
+        else
+            result_qrs_all(f).result_qrs = new_result_qrs;
+            result_qrs_all(f).FileNumber = f;
+        end
+    end
+    
+    % Merge Continuous Data
+    
     info_all(f).info = new_info;
     message = ['Merged file ' num2str(f) ' of ' num2str(nfiles) ' in ' pathname];
     disp(message)
