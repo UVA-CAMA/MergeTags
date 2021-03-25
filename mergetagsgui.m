@@ -152,7 +152,7 @@ for d=1:ndirs % If the user selects more than one directory, loop through each d
             logfiles(f).name = files{Findex(f)};
             logfiles(f).folder = P{p};
         end
-        if isfield(logfile,'name')
+        if isfield(logfiles,'name')
             mergelogs(logfiles)
         end
     end
