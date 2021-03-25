@@ -87,6 +87,15 @@ end
 if ~isempty(pathname)
     mergetags(pathname,filename)
 end
+for f=1:length(filename)
+    if isfile(fullfile(pathname,strrep(filename{f},'results','log')))
+        logfiles(f).folder = pathname;
+        logfiles(f).name = strrep(filename{f},'results','log');
+    end
+end
+if exist('logfiles','var')
+    mergelogs(logfiles);
+end
 
 % --- Executes on button press in foldermerge.
 function foldermerge_Callback(hObject, eventdata, handles)
@@ -94,11 +103,16 @@ function foldermerge_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
+% Note - if there ARE subdirectories, it will only merge files in the
+% subdirectories but not files in the main directory. The merged files from
+% the subdirectories will be stored in the subdirectories.
+
 [pathname] = uigetfile_n_dir(pwd, 'Select one or more directories');
 ndirs = size(pathname,2);
 for d=1:ndirs % If the user selects more than one directory, loop through each directory the user chose
     [P,F] = subdir(pathname{d}); % Look for subdirectories under the user-chosen directory
     if isempty(P) % If there are no subdirectories
+        % Merge Results Files
         files = dir([pathname{d} '/*results.mat']);
         handles.filename = {};
         handles.pathname = {};
@@ -109,8 +123,15 @@ for d=1:ndirs % If the user selects more than one directory, loop through each d
         if ~isempty(handles.filename)
             mergetags(handles.pathname{1},handles.filename)
         end
+        
+        % Merge the log files in the directory into a file with the same name as the first log.mat file, but labeled logmerged.mat
+        logfiles = dir([pathname{d} '/*log.mat']);
+        if ~isempty(logfiles)
+            mergelogs(logfiles);
+        end
     end
     for p=1:length(P) % If there are subdirectories
+        % Merge Results Files
         Findex = find(contains(F{p},'results.mat'));
         files = F{p};
         handles.filename = {};
@@ -121,6 +142,18 @@ for d=1:ndirs % If the user selects more than one directory, loop through each d
         end
         if ~isempty(handles.filename)
             mergetags(handles.pathname{1},handles.filename)
+        end
+        
+        % Merge Log Files
+        Findex = find(contains(F{p},'log.mat'));
+        files = F{p};
+        logfiles = struct;
+        for f=1:length(Findex)
+            logfiles(f).name = files{Findex(f)};
+            logfiles(f).folder = P{p};
+        end
+        if isfield(logfile,'name')
+            mergelogs(logfiles)
         end
     end
 end
