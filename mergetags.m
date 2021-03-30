@@ -99,7 +99,7 @@ message = ['Saving as ' name 'merged' ext ' in ' pathname];
 disp(message) 
 msgbox(message,'Merge Tags','modal')
 
-save(fullfile(pathname, [name 'merged']),'result_tags','result_tagcolumns','result_tagtitle','info')
+save(fullfile(pathname, [name 'merged.mat']),'result_tags','result_tagcolumns','result_tagtitle','info')
 
 message = ['Saved as ' name 'merged' ext ' in ' pathname '. Merge complete.'];
 disp(message)

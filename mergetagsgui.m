@@ -78,7 +78,7 @@ function selectindividualfiles_Callback(hObject, eventdata, handles)
 % hObject    handle to selectindividualfiles (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-[filename, pathname] = uigetfile({'*.mat'}, 'Select results files','MultiSelect','on');
+[filename, pathname] = uigetfile({'*results.mat'}, 'Select results files','MultiSelect','on');
 % Handle the situation where only one file is selected
 if ~iscell(filename)
     f{1} = filename;
