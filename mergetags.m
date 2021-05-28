@@ -15,6 +15,11 @@ for f=1:nfiles
     new_tagcolumns = new_data.result_tagcolumns;
     new_tagtitles = new_data.result_tagtitle;
     
+    % skip completely empty result file
+    if isempty(new_tagtitles)
+        continue;
+    end
+    
     new_data.info.resultname = new_data.result_name;
     new_data.info.resultfile = file;
     % Remove timestamps to save space unless requested
