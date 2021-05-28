@@ -16,7 +16,7 @@ for f=1:nfiles
     new_tagtitles = new_data.result_tagtitle;
     
     % skip completely empty result file
-    if isempty(new_tagtitles)
+    if isempty(new_tagtitles) && isempty(new_tags) && isempty(new_tagcolumns)
         continue;
     end
     
